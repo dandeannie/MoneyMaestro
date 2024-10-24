@@ -4,3 +4,10 @@ With its user-friendly interface, real-time insights, and personalized advice, M
 
 ##Problem Statement:
 Many individuals struggle with tracking daily expenses and managing personal finances effectively, leading to poor budgeting and financial stress. A user-friendly digital solution is needed to help people monitor spending, set budgets, and analyze their financial habits.
+
+##OBJECTIVES:
+1. Track and categorize expenses.
+2. Set and monitor budgets.
+3.Provide financial insights through charts and reports.
+4. Send notifications and reminders.
+5. Support multiple platforms.
