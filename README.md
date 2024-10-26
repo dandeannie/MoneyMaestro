@@ -10,4 +10,4 @@ Many individuals struggle with tracking daily expenses and managing personal fin
 2. Set and monitor budgets.
 3.Provide financial insights through charts and reports.
 4. Send notifications and reminders.
-5. Support multiple platforms.
+   Support multiple platforms.
