@@ -11,3 +11,4 @@ Many individuals struggle with tracking daily expenses and managing personal fin
 3.Provide financial insights through charts and reports.
 4. Send notifications and reminders.
    Support multiple platforms.
+H
