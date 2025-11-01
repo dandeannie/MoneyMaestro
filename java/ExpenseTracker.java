@@ -443,6 +443,7 @@ public class ExpenseTracker extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void addexActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addexActionPerformed
+        java.sql.PreparedStatement pst = null;
         try{
             java.util.Date dt=dateex.getDate();
             String s1=amountex.getText();
@@ -450,14 +451,25 @@ public class ExpenseTracker extends javax.swing.JFrame {
             if(dt!=null && !s1.equals("")&&!c.equals("")){
                 int amount=Integer.parseInt(s1);
                 java.sql.Date date=new java.sql.Date(dt.getTime());
-                db.DbConnect.s.executeUpdate("insert into spendings (category,date,amount) values('"+c+"','"+date+"',"+amount+") ");
+                String query = "INSERT INTO spendings (category,date,amount) VALUES(?, ?, ?)";
+                pst = db.DbConnect.c.prepareStatement(query);
+                pst.setString(1, c);
+                pst.setDate(2, date);
+                pst.setInt(3, amount);
+                pst.executeUpdate();
                 JOptionPane.showMessageDialog(null, "Expense Added!");
                 getEntries();
             }else{
-                JOptionPane.showMessageDialog(null, "Are you stupid!!!");
+                JOptionPane.showMessageDialog(null, "Please fill all required fields!");
             }
         }catch(Exception ex){
            JOptionPane.showMessageDialog(null, ex);
+        } finally {
+            try {
+                if (pst != null) pst.close();
+            } catch (Exception ex) {
+                System.out.println("Error closing PreparedStatement: " + ex.getMessage());
+            }
         }
     }//GEN-LAST:event_addexActionPerformed
 
@@ -478,12 +490,22 @@ public class ExpenseTracker extends javax.swing.JFrame {
             int r= JOptionPane.showConfirmDialog(null, "Confirm delete?", "Delete confirmation", JOptionPane.YES_NO_OPTION);
         if(r==JOptionPane.YES_OPTION){
             int id=(int)table.getValueAt(ri, 0);
+            java.sql.PreparedStatement pst = null;
             try{
-            db.DbConnect.s.executeUpdate("delete from spendings where s_id="+id);
+            String query = "DELETE FROM spendings WHERE s_id=?";
+            pst = db.DbConnect.c.prepareStatement(query);
+            pst.setInt(1, id);
+            pst.executeUpdate();
             JOptionPane.showMessageDialog(null, "Deleted!");
             getEntries();
         }catch(Exception ex){
            JOptionPane.showMessageDialog(null, ex);
+        } finally {
+            try {
+                if (pst != null) pst.close();
+            } catch (Exception ex) {
+                System.out.println("Error closing PreparedStatement: " + ex.getMessage());
+            }
         }
        }
       }

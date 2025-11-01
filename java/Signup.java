@@ -189,15 +189,17 @@ public class Signup extends javax.swing.JFrame {
     private void signupbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signupbActionPerformed
 
   
-   String fullName, email, Password, query;
+   String fullName, email, Password;
         String SUrl, SUser, SPass;
         SUrl = "jdbc:MySQL://localhost:3306/mm1";
         SUser = "root";
         SPass = "trisha2005";
+        Connection con = null;
+        java.sql.PreparedStatement pst = null;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection(SUrl, SUser, SPass);
-            Statement st = con.createStatement();
+            con = DriverManager.getConnection(SUrl, SUser, SPass);
+            
             if("".equals(fname.getText())){
                 JOptionPane.showMessageDialog(new JFrame(), "Full Name is require", "Error",
                         JOptionPane.ERROR_MESSAGE);
@@ -213,10 +215,13 @@ public class Signup extends javax.swing.JFrame {
             Password = pass.getText();
             System.out.println(Password);
             
-            query = "INSERT INTO users(fullname, email, password)"+
-                    "VALUES('"+fullName+"', '"+email+"' , '"+Password+"')";
+            String query = "INSERT INTO users(fullname, email, password) VALUES(?, ?, ?)";
+            pst = con.prepareStatement(query);
+            pst.setString(1, fullName);
+            pst.setString(2, email);
+            pst.setString(3, Password);
             
-            st.execute(query);
+            pst.executeUpdate();
             fname.setText("");
             emailAddress.setText("");
             pass.setText("");
@@ -224,6 +229,13 @@ public class Signup extends javax.swing.JFrame {
             }
         }catch(Exception e){
            System.out.println("Error!" + e.getMessage()); 
+        } finally {
+            try {
+                if (pst != null) pst.close();
+                if (con != null) con.close();
+            } catch (Exception ex) {
+                System.out.println("Error closing resources: " + ex.getMessage());
+            }
         }
 
 
