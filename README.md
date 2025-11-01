@@ -39,3 +39,107 @@ Displays a list of expenses and calculates the total spent based on the selected
 Lets users record expenses for individual family members by selecting a member, entering category and amount. It shows a summary table with category, amount, and member details, with an option to delete records.
 
 <img width="950" height="672" alt="image" src="https://github.com/user-attachments/assets/e75a76e4-e6f8-41d2-84b6-92c56c010c87" />
+
+
+## How to build and run
+
+MoneyMaestro is a Java Swing desktop app that uses MySQL and two third‑party libraries:
+
+- JFreeChart (charts)
+- JCalendar (date chooser)
+
+The repository already includes the required JARs in `lib/` and the app’s image resources in `resources/`. Follow the steps below for your environment.
+
+### Prerequisites
+
+- JDK 11 or newer (javac/java available on PATH)
+- MySQL running locally (or reachable), with a database named `mm1`
+- Optional: VS Code Dev Container users can run headless using Xvfb (see Troubleshooting)
+
+### Database setup
+
+The app expects MySQL at `jdbc:mysql://localhost:3306/mm1` with user `root` and password `trisha2005` as currently hard-coded in:
+
+- `database connection/DbConnect.java`
+- `java/login.java`
+- `java/Signup.java`
+- `java/ExpenseTracker.java`, `java/Category.java`, `java/ViewSpending.java`, `java/report.java`, `java/Graph.java`
+
+You can change these credentials/URL in code to match your environment. Create the schema and tables:
+
+```sql
+CREATE DATABASE IF NOT EXISTS mm1;
+USE mm1;
+
+-- user accounts for app login/signup
+CREATE TABLE IF NOT EXISTS users (
+   id INT AUTO_INCREMENT PRIMARY KEY,
+   fullname VARCHAR(100) NOT NULL,
+   email VARCHAR(255) NOT NULL UNIQUE,
+   password VARCHAR(255) NOT NULL
+);
+
+-- categories (unique names)
+CREATE TABLE IF NOT EXISTS category_info (
+   category VARCHAR(100) PRIMARY KEY
+);
+
+-- spendings entries
+CREATE TABLE IF NOT EXISTS spendings (
+   s_id INT AUTO_INCREMENT PRIMARY KEY,
+   category VARCHAR(100) NOT NULL,
+   date DATE NOT NULL,
+   amount INT NOT NULL,
+   CONSTRAINT fk_spendings_category
+      FOREIGN KEY (category) REFERENCES category_info(category)
+      ON UPDATE CASCADE ON DELETE RESTRICT
+);
+
+-- sample data (optional)
+INSERT IGNORE INTO category_info(category) VALUES ('Food'),('Transport'),('Utilities');
+INSERT INTO users(fullname,email,password) VALUES ('Demo User','demo@example.com','demo123')
+ON DUPLICATE KEY UPDATE fullname=VALUES(fullname);
+```
+
+### Build
+
+From the project root:
+
+```bash
+# Compile all sources into build/classes
+javac -d build/classes -cp "lib/*" java/*.java "database connection/DbConnect.java"
+```
+
+### Run
+
+Launch the login window:
+
+```bash
+java -cp "build/classes:resources:lib/*" mm.login
+```
+
+- On Windows PowerShell/CMD, use `;` as the classpath separator:
+
+```powershell
+java -cp "build/classes;resources;lib/*" mm.login
+```
+
+### Troubleshooting
+
+- Headless/containers (no desktop available): run under a virtual X server.
+
+```bash
+sudo apt-get update
+sudo apt-get install -y xvfb libxext6 libxrender1 libxtst6 libxi6 libfreetype6 fonts-dejavu-core
+xvfb-run -a java -cp "build/classes:resources:lib/*" mm.login
+```
+
+- UnsatisfiedLinkError mentioning `libawt_xawt.so` or `libXtst.so.6`: install the packages above (`libxtst6`, `libxext6`, etc.).
+
+- MySQL connection errors: verify the DB is running and credentials/URL match your setup. Update the JDBC URL/credentials in the Java files listed under “Database setup.”
+
+- Missing image `/icon/money.jpg`: ensure `resources/icon/money.jpg` exists. The repo places the image there already.
+
+### Security note
+
+The current code uses hard-coded database credentials for development/demo purposes. For production, externalize secrets (environment variables or config files) and use hashed passwords.
