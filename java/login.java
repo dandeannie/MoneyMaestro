@@ -48,7 +48,7 @@ public class login extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(0, 0, 0));
 
-        jLabel4.setIcon(new javax.swing.ImageIcon("C:\\Users\\trisha deshmukh\\OneDrive\\Desktop\\money.jpg")); // NOI18N
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/money.jpg"))); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -195,16 +195,19 @@ public class login extends javax.swing.JFrame {
     }//GEN-LAST:event_passwordActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
- String Email, Password, query, fname = null, passDb = null;
+ String Email, Password, fname = null, passDb = null;
         String SUrl, SUser, SPass;
         SUrl = "jdbc:MySQL://localhost:3306/mm1";
         SUser = "root";
         SPass = "trisha2005";
         int notFound = 0;
+        Connection con = null;
+        java.sql.PreparedStatement pst = null;
+        ResultSet rs = null;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection(SUrl, SUser, SPass);
-            Statement st = con.createStatement();
+            con = DriverManager.getConnection(SUrl, SUser, SPass);
+            
             if("".equals(email.getText())){
                 JOptionPane.showMessageDialog(new JFrame(), "Email Address is require", "Error",
                         JOptionPane.ERROR_MESSAGE);
@@ -215,9 +218,11 @@ public class login extends javax.swing.JFrame {
             Email    = email.getText();
             Password = password.getText();
             
-            query = "SELECT * FROM users WHERE email= '"+Email+"'";
-       
-            ResultSet rs = st.executeQuery(query);
+            String query = "SELECT * FROM users WHERE email= ?";
+            pst = con.prepareStatement(query);
+            pst.setString(1, Email);
+            
+            rs = pst.executeQuery();
             while(rs.next()){
                 passDb = rs.getString("password");
                 fname = rs.getString("fullname");
@@ -239,6 +244,14 @@ public class login extends javax.swing.JFrame {
             }
         }catch(Exception e){
            System.out.println("Error!" + e.getMessage()); 
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pst != null) pst.close();
+                if (con != null) con.close();
+            } catch (Exception ex) {
+                System.out.println("Error closing resources: " + ex.getMessage());
+            }
         }
         
                 // TODO add your handling code here:

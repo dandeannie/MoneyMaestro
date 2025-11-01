@@ -398,6 +398,8 @@ public class ViewSpending extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void search1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_search1ActionPerformed
+        java.sql.PreparedStatement pst = null;
+        ResultSet rs = null;
         try{
             javax.swing.table.DefaultTableModel dtm=(javax.swing.table.DefaultTableModel) table1.getModel();
         int rc=dtm.getRowCount();
@@ -406,7 +408,11 @@ public class ViewSpending extends javax.swing.JFrame {
         }
         java.sql.Date dt1=new java.sql.Date(d1.getDate().getTime());
         java.sql.Date dt2=new java.sql.Date(d2.getDate().getTime());
-        ResultSet rs=db.DbConnect.s.executeQuery("select * from spendings where date<='"+dt1+"' and date>='"+dt2+"' order by date asc");
+        String query = "SELECT * FROM spendings WHERE date<=? AND date>=? ORDER BY date ASC";
+        pst = db.DbConnect.c.prepareStatement(query);
+        pst.setDate(1, dt1);
+        pst.setDate(2, dt2);
+        rs = pst.executeQuery();
         int total=0;
         while(rs.next()){
             int t=rs.getInt("amount");
@@ -417,10 +423,19 @@ public class ViewSpending extends javax.swing.JFrame {
         totalAmount1.setText(total+"");
         }catch(Exception ex){
               JOptionPane.showMessageDialog(null, ex);
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pst != null) pst.close();
+            } catch (Exception ex) {
+                System.out.println("Error closing resources: " + ex.getMessage());
+            }
         }
     }//GEN-LAST:event_search1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        java.sql.PreparedStatement pst = null;
+        ResultSet rs = null;
         try{
             javax.swing.table.DefaultTableModel dtm=(javax.swing.table.DefaultTableModel) table2.getModel();
         int rc=dtm.getRowCount();
@@ -430,7 +445,12 @@ public class ViewSpending extends javax.swing.JFrame {
         String c=(String)category.getSelectedItem();
         java.sql.Date dt1=new java.sql.Date(dd1.getDate().getTime());
         java.sql.Date dt2=new java.sql.Date(dd2.getDate().getTime());
-        ResultSet rs=db.DbConnect.s.executeQuery("select * from spendings where date<='"+dt1+"' and date>='"+dt2+"' and category='"+c+"' order by date asc");
+        String query = "SELECT * FROM spendings WHERE date<=? AND date>=? AND category=? ORDER BY date ASC";
+        pst = db.DbConnect.c.prepareStatement(query);
+        pst.setDate(1, dt1);
+        pst.setDate(2, dt2);
+        pst.setString(3, c);
+        rs = pst.executeQuery();
         int total=0;
         while(rs.next()){
             int t=rs.getInt("amount");
@@ -441,6 +461,13 @@ public class ViewSpending extends javax.swing.JFrame {
         totalAmount2.setText(total+"");
         }catch(Exception ex){
               JOptionPane.showMessageDialog(null, ex);
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pst != null) pst.close();
+            } catch (Exception ex) {
+                System.out.println("Error closing resources: " + ex.getMessage());
+            }
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 

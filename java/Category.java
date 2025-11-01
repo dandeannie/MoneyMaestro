@@ -197,10 +197,14 @@ public class Category extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void AddcatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddcatActionPerformed
+         java.sql.PreparedStatement pst = null;
          try{
             String category=cat.getText();
-            if(!category.equals("")){                
-           db.DbConnect.s.executeUpdate("insert into category_info values ('"+category+"')");
+            if(!category.equals("")){
+            String query = "INSERT INTO category_info VALUES (?)";
+            pst = db.DbConnect.c.prepareStatement(query);
+            pst.setString(1, category);
+            pst.executeUpdate();
             JOptionPane.showMessageDialog(null, "Category Added!");
             getEntries();
             }
@@ -211,6 +215,12 @@ public class Category extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Category Already Exists");
          }catch(Exception ex){
             JOptionPane.showMessageDialog(null, ex);
+        } finally {
+            try {
+                if (pst != null) pst.close();
+            } catch (Exception ex) {
+                System.out.println("Error closing PreparedStatement: " + ex.getMessage());
+            }
         }
     }//GEN-LAST:event_AddcatActionPerformed
 
@@ -220,12 +230,22 @@ public class Category extends javax.swing.JFrame {
         int r= JOptionPane.showConfirmDialog(null, "Confirm delete?", "Delete confirmation", JOptionPane.YES_NO_OPTION);
         if(r==JOptionPane.YES_OPTION){
             String category=(String) tablecat.getValueAt(ri, 1);
+            java.sql.PreparedStatement pst = null;
             try{
-             db.DbConnect.s.executeUpdate("delete from category_info where category='"+category+"'");
+             String query = "DELETE FROM category_info WHERE category=?";
+             pst = db.DbConnect.c.prepareStatement(query);
+             pst.setString(1, category);
+             pst.executeUpdate();
              JOptionPane.showMessageDialog(null, "Category Deleted!");
              getEntries();
             }catch(Exception ex){
               JOptionPane.showMessageDialog(null, ex);
+            } finally {
+                try {
+                    if (pst != null) pst.close();
+                } catch (Exception ex) {
+                    System.out.println("Error closing PreparedStatement: " + ex.getMessage());
+                }
             }
         }
        }
