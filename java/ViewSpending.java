@@ -408,7 +408,7 @@ public class ViewSpending extends javax.swing.JFrame {
         }
         java.sql.Date dt1=new java.sql.Date(d1.getDate().getTime());
         java.sql.Date dt2=new java.sql.Date(d2.getDate().getTime());
-        String query = "SELECT * FROM spendings WHERE date<=? AND date>=? ORDER BY date ASC";
+        String query = "SELECT * FROM spendings WHERE date>=? AND date<=? ORDER BY date ASC";
         pst = db.DbConnect.c.prepareStatement(query);
         pst.setDate(1, dt1);
         pst.setDate(2, dt2);
@@ -445,7 +445,7 @@ public class ViewSpending extends javax.swing.JFrame {
         String c=(String)category.getSelectedItem();
         java.sql.Date dt1=new java.sql.Date(dd1.getDate().getTime());
         java.sql.Date dt2=new java.sql.Date(dd2.getDate().getTime());
-        String query = "SELECT * FROM spendings WHERE date<=? AND date>=? AND category=? ORDER BY date ASC";
+        String query = "SELECT * FROM spendings WHERE date>=? AND date<=? AND category=? ORDER BY date ASC";
         pst = db.DbConnect.c.prepareStatement(query);
         pst.setDate(1, dt1);
         pst.setDate(2, dt2);
